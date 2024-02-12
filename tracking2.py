@@ -4,6 +4,14 @@ from ultralytics import YOLO
 # Cargamos video o streaming
 cap = cv2.VideoCapture("videos/traffic.mp4")
 # Cargamos el modelo de YoloV8
+"""
+Modelo	    tamaño  acc1    acc5    Velocidad  VelocidadTRS    parámetros  FLOPs
+YOLOv8n-cls	224	    69.0	88.3	12.9	    0.31	        2.7	        4.3
+YOLOv8s-cls	224	    73.8	91.7	23.4	    0.35	        6.4	        13.5
+YOLOv8m-cls	224	    76.8	93.5	85.4	    0.62	        17.0	    42.7
+YOLOv8l-cls	224	    76.8	93.5	163.0	    0.87	        37.5	    99.7
+YOLOv8x-cls	224	    79.0	94.6	232.0	    1.01	        57.4	    154.8
+"""
 model = YOLO("yolov8n.pt")
 
 while cap.isOpened():
@@ -28,19 +36,90 @@ while cap.isOpened():
         classes	list[int]	None	Filtra las predicciones a un conjunto de ID de clase. Sólo se devolverán las detecciones que pertenezcan a las clases especificadas. Útil para centrarse en objetos relevantes en tareas de detección multiclase.
         retina_masks	bool	False	Utiliza máscaras de segmentación de alta resolución si están disponibles en el modelo. Esto puede mejorar la calidad de la máscara para las tareas de segmentación, proporcionando detalles más finos.
         embed	list[int]	None	Especifica las capas de las que extraer vectores de características o incrustaciones. Útil para tareas posteriores como la agrupación o la búsqueda de similitudes.
-        Visualización
-        show	bool	False	Si Truemuestra las imágenes o vídeos anotados en una ventana. Resulta útil para obtener información visual inmediata durante el desarrollo o las pruebas.
-        save	bool	False	Permite guardar las imágenes o vídeos anotados en un archivo. Útil para documentación, análisis posteriores o para compartir resultados.
-        save_frames	bool	False	Al procesar vídeos, guarda fotogramas individuales como imágenes. Es útil para extraer fotogramas concretos o para un análisis detallado fotograma a fotograma.
-        save_txt	bool	False	Guarda los resultados de la detección en un archivo de texto, siguiendo el formato [class] [x_center] [y_center] [width] [height] [confidence]. Útil para la integración con otras herramientas de análisis.
-        save_conf	bool	False	Incluye puntuaciones de confianza en los archivos de texto guardados. Aumenta el detalle disponible para el postprocesado y el análisis.
-        save_crop	bool	False	Guarda imágenes recortadas de las detecciones. Útil para aumentar el conjunto de datos, analizarlos o crear conjuntos de datos centrados en objetos concretos.
-        show_labels	bool	True	Muestra etiquetas para cada detección en la salida visual. Proporciona una comprensión inmediata de los objetos detectados.
-        show_conf	bool	True	Muestra la puntuación de confianza de cada detección junto a la etiqueta. Da una idea de la certeza del modelo para cada detección.
-        show_boxes	bool	True	Dibuja recuadros delimitadores alrededor de los objetos detectados. Esencial para la identificación visual y la localización de objetos en imágenes o fotogramas de vídeo.
-        line_width	None or int	None	Especifica la anchura de línea de los cuadros delimitadores. Si NoneEl ancho de línea se ajusta automáticamente en función del tamaño de la imagen. Proporciona personalización visual para mayor claridad.
+        
+        model.names
+        {0: 'person',
+        1: 'bicycle',
+        2: 'car',
+        3: 'motorcycle',
+        4: 'airplane',
+        5: 'bus',
+        6: 'train',
+        7: 'truck',
+        8: 'boat',
+        9: 'traffic light',
+        10: 'fire hydrant',
+        11: 'stop sign',
+        12: 'parking meter',
+        13: 'bench',
+        14: 'bird',
+        15: 'cat',
+        16: 'dog',
+        17: 'horse',
+        18: 'sheep',
+        19: 'cow',
+        20: 'elephant',
+        21: 'bear',
+        22: 'zebra',
+        23: 'giraffe',
+        24: 'backpack',
+        25: 'umbrella',
+        26: 'handbag',
+        27: 'tie',
+        28: 'suitcase',
+        29: 'frisbee',
+        30: 'skis',
+        31: 'snowboard',
+        32: 'sports ball',
+        33: 'kite',
+        34: 'baseball bat',
+        35: 'baseball glove',
+        36: 'skateboard',
+        37: 'surfboard',
+        38: 'tennis racket',
+        39: 'bottle',
+        40: 'wine glass',
+        41: 'cup',
+        42: 'fork',
+        43: 'knife',
+        44: 'spoon',
+        45: 'bowl',
+        46: 'banana',
+        47: 'apple',
+        48: 'sandwich',
+        49: 'orange',
+        50: 'broccoli',
+        51: 'carrot',
+        52: 'hot dog',
+        53: 'pizza',
+        54: 'donut',
+        55: 'cake',
+        56: 'chair',
+        57: 'couch',
+        58: 'potted plant',
+        59: 'bed',
+        60: 'dining table',
+        61: 'toilet',
+        62: 'tv',
+        63: 'laptop',
+        64: 'mouse',
+        65: 'remote',
+        66: 'keyboard',
+        67: 'cell phone',
+        68: 'microwave',
+        69: 'oven',
+        70: 'toaster',
+        71: 'sink',
+        72: 'refrigerator',
+        73: 'book',
+        74: 'clock',
+        75: 'vase',
+        76: 'scissors',
+        77: 'teddy bear',
+        78: 'hair drier',
+        79: 'toothbrush'}
         """
-        results = model.track(frame, conf=0.7, iou=0.5, persist=True, verbose=False)
+        results = model.track(frame, conf=0.7, iou=0.5, persist=True, verbose=False, classes=[2,3,5,7])
 
         # Visualizamos los resultados en el frame
         annotated_frame = results[0].plot()
