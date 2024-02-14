@@ -6,11 +6,14 @@ from PIL import Image, ImageTk
 import threading
 import supervision as sv
 from ultralytics import YOLO
-from datetime import datetime 
+from datetime import datetime
+import uuid
 
 LINE_START = (0, 400)
 LINE_END = (1200, 400)
-RTSP_CAPTURE_CONFIG = "videos/traffic.mp4"
+#RTSP_CAPTURE_CONFIG = "videos/traffic.mp4"
+#RTSP_CAPTURE_CONFIG = "videos/test.mp4"
+RTSP_CAPTURE_CONFIG = "rtsp://admin:638200Mundo@192.168.77.3:554/profile2/media.smp"
 
 def main():
     global anchura_pantalla
@@ -21,11 +24,11 @@ def main():
 
     model = YOLO("yolov8n.pt")
     
-    results = model.track(source=RTSP_CAPTURE_CONFIG, conf=0.7, iou=0.5, show=False, stream=True, agnostic_nms=True, persist=True, verbose=False, classes=[2,3,5,7])
+    results = model.track(source=RTSP_CAPTURE_CONFIG, vid_stride=2,conf=0.7, iou=0.5, show=False, stream=True, agnostic_nms=True, persist=True, verbose=False, classes=[2,3,5,7])
     
     line_zone = sv.LineZone(start=sv.Point(LINE_START[0],LINE_START[1]), end=sv.Point(LINE_END[0],LINE_END[1]))
     #line_annotator = sv.LineZoneAnnotator(thickness=1, text_thickness=1, text_scale=0.5)
-    #box_annotator = sv.BoxAnnotator(thickness = 1,text_thickness = 1,text_scale = 0.5)
+    box_annotator = sv.BoxAnnotator(thickness = 1,text_thickness = 1,text_scale = 0.5)
     
         
     for result in results:
@@ -38,15 +41,15 @@ def main():
 
         cv2.line(frame,LINE_START,LINE_END,(255,0,0),5)   
 
-        """
+        
         labels = [f"{tracker_id} {model.model.names[class_id]} {confidence:0.2f}"
                   for _, confidence, class_id, tracker_id 
                   in detections]
-        """
+        
         line_zone.trigger(detections=detections)
         ahora_esta = line_zone.tracker_state.copy
         #line_annotator.annotate(frame, line_zone)
-        #frame = box_annotator.annotate(scene = frame,detections = detections,labels = labels)
+        frame = box_annotator.annotate(scene = frame,detections = detections,labels = labels)
         
         # Mostramos en TK
         frame = cv2.resize(frame, (anchura_img, altura_img))
@@ -83,6 +86,10 @@ def main():
                             img = ImageTk.PhotoImage(image=im)
                             lblCaptura.configure(image=img)
                             lblCaptura.image = img
+                            # Salvamos imagen del vehiculo
+                            numero_raro = str(uuid.uuid4())
+                            nombre_file_coche = "./capturas/coche_" + numero_raro + ".jpg"
+                            im.save(nombre_file_coche)
             antes_estaban = ahora_esta.copy()
            
        
