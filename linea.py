@@ -11,9 +11,8 @@ import uuid
 
 LINE_START = (0, 400)
 LINE_END = (1200, 400)
-#RTSP_CAPTURE_CONFIG = "videos/traffic.mp4"
+RTSP_CAPTURE_CONFIG = "videos/traffic.mp4"
 #RTSP_CAPTURE_CONFIG = "videos/test.mp4"
-RTSP_CAPTURE_CONFIG = "rtsp://admin:638200Mundo@192.168.77.3:554/profile2/media.smp"
 
 def main():
     global anchura_pantalla
